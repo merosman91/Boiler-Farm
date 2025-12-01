@@ -17,7 +17,7 @@ export default defineConfig({
         start_url: '/',
         icons: [
           {
-            src: 'https://cdn-icons-png.flaticon.com/512/2395/2395796.png',
+            src: './src/icon-192.png',
             sizes: '192x192',
             type: 'image/png'
           }
