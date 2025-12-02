@@ -8,8 +8,8 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       manifest: {
-        name: 'نظام إدارة المزرعة',
-        short_name: 'المزرعة',
+        name: 'نظام إدارة حظائر الدواجن',
+        short_name: 'دواجني',
         theme_color: '#1e40af',
         background_color: '#ffffff',
         display: 'standalone',
@@ -17,7 +17,7 @@ export default defineConfig({
         start_url: '/',
         icons: [
           {
-            src: './src/icon-192.png',
+            src: '/src/icon-192.png',
             sizes: '192x192',
             type: 'image/png'
           }
