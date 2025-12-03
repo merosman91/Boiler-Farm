@@ -269,42 +269,87 @@ export default function App() {
       );
   };
 
-  // --- 4. Daily Logs & Financials (مختصرة للحجم) ---
+    // --- 3. اليوميات (محدثة: أنواع العلف وأسباب النافق) ---
   const DailyOperations = () => {
       if (!activeBatch) return null;
-      const [view, setView] = useState('list');
-      const [log, setLog] = useState({ date: new Date().toISOString().split('T')[0], dead: '', feed: '', avgWeight: '', temp: '', notes: '' });
-      const saveLog = () => { setDailyLogs([...dailyLogs, { ...log, id: Date.now(), batchId: activeBatch.id }]); setLog({ date: new Date().toISOString().split('T')[0], dead: '', feed: '', avgWeight: '', temp: '', notes: '' }); setView('list'); showNotify("تم الحفظ"); };
       
+      const [view, setView] = useState('list');
+      // تمت إضافة deadCause و feedType للحالة
+      const [log, setLog] = useState({ date: new Date().toISOString().split('T')[0], dead: '', deadCause: 'طبيعي', feed: '', feedType: 'بادي 23%', avgWeight: '', temp: '', notes: '' });
+
+      const saveLog = () => {
+          setDailyLogs([...dailyLogs, { ...log, id: Date.now(), batchId: activeBatch.id }]);
+          // إعادة تعيين الحقول
+          setLog({ date: new Date().toISOString().split('T')[0], dead: '', deadCause: 'طبيعي', feed: '', feedType: 'بادي 23%', avgWeight: '', temp: '', notes: '' });
+          setView('list'); 
+          showNotify("تم حفظ السجل اليومي ✅");
+      };
+
+      // قوائم الاختيار
+      const FEED_TYPES = ['بادي 23%', 'نامي 21%', 'ناهي 19%'];
+      const DEATH_CAUSES = ['طبيعي', 'سموم فطرية', 'إجهاد حراري', 'أمراض تنفسية', 'كوكسيديا', 'سردة/فرزة', 'أخرى'];
+
       return (
           <div className="space-y-4 pb-20">
               <div className="flex p-1 bg-gray-200 rounded-xl">
                   <button onClick={() => setView('list')} className={`flex-1 py-2 text-xs font-bold rounded-lg ${view === 'list' ? 'bg-white shadow text-orange-600' : 'text-gray-500'}`}>السجل</button>
-                  <button onClick={() => setView('new')} className={`flex-1 py-2 text-xs font-bold rounded-lg ${view === 'new' ? 'bg-white shadow text-orange-600' : 'text-gray-500'}`}>تسجيل يومي</button>
+                  <button onClick={() => setView('new')} className={`flex-1 py-2 text-xs font-bold rounded-lg ${view === 'new' ? 'bg-white shadow text-orange-600' : 'text-gray-500'}`}>تسجيل جديد</button>
               </div>
+
               {view === 'new' && (
                   <Card className="animate-slide-up">
                       <Input label="التاريخ" type="date" value={log.date} onChange={e => setLog({...log, date: e.target.value})} />
-                      <div className="grid grid-cols-2 gap-2">
-                          <div className="bg-red-50 p-2 rounded-xl"><label className="text-xs font-bold text-red-800 block mb-1">نافق</label><input type="number" className="w-full p-2 border border-red-200 rounded" value={log.dead} onChange={e => setLog({...log, dead: e.target.value})}/></div>
-                          <div className="bg-amber-50 p-2 rounded-xl"><label className="text-xs font-bold text-amber-800 block mb-1">علف (كجم)</label><input type="number" className="w-full p-2 border border-amber-200 rounded" value={log.feed} onChange={e => setLog({...log, feed: e.target.value})}/></div>
-                          <div className="bg-blue-50 p-2 rounded-xl"><label className="text-xs font-bold text-blue-800 block mb-1">وزن (جم)</label><input type="number" className="w-full p-2 border border-blue-200 rounded" value={log.avgWeight} onChange={e => setLog({...log, avgWeight: e.target.value})}/></div>
-                          <div className="bg-gray-50 p-2 rounded-xl"><label className="text-xs font-bold text-gray-800 block mb-1">حرارة</label><input type="number" className="w-full p-2 border border-gray-200 rounded" value={log.temp} onChange={e => setLog({...log, temp: e.target.value})}/></div>
+                      
+                      {/* قسم النافق المطور */}
+                      <div className="bg-red-50 p-3 rounded-xl mb-3 border border-red-100">
+                          <label className="text-xs font-bold text-red-800 block mb-2 flex items-center gap-1"><Skull size={14}/> النافق</label>
+                          <div className="flex gap-2">
+                              <input type="number" className="flex-1 p-2 rounded border border-red-200" value={log.dead} onChange={e => setLog({...log, dead: e.target.value})} placeholder="العدد" />
+                              <select className="flex-1 p-2 rounded border border-red-200 text-xs bg-white" value={log.deadCause} onChange={e => setLog({...log, deadCause: e.target.value})}>
+                                  {DEATH_CAUSES.map(c => <option key={c} value={c}>{c}</option>)}
+                              </select>
+                          </div>
                       </div>
-                      <Button onClick={saveLog} className="w-full mt-3">حفظ</Button>
+
+                      {/* قسم العلف المطور */}
+                      <div className="bg-amber-50 p-3 rounded-xl mb-3 border border-amber-100">
+                          <label className="text-xs font-bold text-amber-800 block mb-2 flex items-center gap-1"><Wheat size={14}/> استهلاك العلف</label>
+                          <div className="flex gap-2">
+                              <input type="number" className="flex-1 p-2 rounded border border-amber-200" value={log.feed} onChange={e => setLog({...log, feed: e.target.value})} placeholder="الكمية (كجم)" />
+                              <select className="flex-1 p-2 rounded border border-amber-200 text-xs bg-white" value={log.feedType} onChange={e => setLog({...log, feedType: e.target.value})}>
+                                  {FEED_TYPES.map(f => <option key={f} value={f}>{f}</option>)}
+                              </select>
+                          </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2">
+                          <Input label="متوسط الوزن (جم)" type="number" value={log.avgWeight} onChange={e => setLog({...log, avgWeight: e.target.value})} />
+                          <Input label="الحرارة °C" type="number" value={log.temp} onChange={e => setLog({...log, temp: e.target.value})} />
+                      </div>
+                      
+                      <Input label="ملاحظات" value={log.notes} onChange={e => setLog({...log, notes: e.target.value})} />
+                      <Button onClick={saveLog} className="w-full mt-2">حفظ البيانات</Button>
                   </Card>
               )}
-              {view === 'list' && <div className="space-y-2">{dailyLogs.filter(l => l.batchId === activeBatch.id).sort((a,b)=>new Date(b.date)-new Date(a.date)).map(l => (
-                  <div key={l.id} className="bg-white p-3 rounded-xl shadow-sm border border-gray-100 flex justify-between items-center text-xs">
-                      <div><span className="font-bold block text-sm">{formatDate(l.date)}</span><span>عمر {getDaysDifference(l.date) - getDaysDifference(activeBatch.startDate) + 1}</span></div>
-                      <div className="flex gap-3">
-                          <span className="text-red-600 font-bold">☠️ {l.dead||0}</span>
-                          <span className="text-amber-600 font-bold">🌾 {l.feed||0}</span>
-                          <span className="text-blue-600 font-bold">⚖️ {l.avgWeight||'-'}</span>
-                      </div>
-                      <button onClick={() => handleDelete('سجل', () => setDailyLogs(dailyLogs.filter(d => d.id !== l.id)))} className="text-red-400"><Trash2 size={14}/></button>
+
+              {view === 'list' && (
+                  <div className="space-y-2">
+                      {dailyLogs.filter(l => l.batchId === activeBatch.id).sort((a,b)=>new Date(b.date)-new Date(a.date)).map(l => (
+                          <div key={l.id} className="bg-white p-3 rounded-xl shadow-sm border border-gray-100 text-xs">
+                              <div className="flex justify-between font-bold text-gray-800 mb-2 border-b pb-1">
+                                  <span>{formatDate(l.date)}</span>
+                                  {l.dead > 0 && <span className="text-red-600">نافق: {l.dead} ({l.deadCause})</span>}
+                              </div>
+                              <div className="grid grid-cols-3 gap-2 text-center text-gray-500">
+                                  <div><p>علف ({l.feedType})</p><p className="font-bold text-amber-600">{l.feed} كجم</p></div>
+                                  <div><p>وزن</p><p className="font-bold text-blue-600">{l.avgWeight || '-'} جم</p></div>
+                                  <div><p>حرارة</p><p className="font-bold text-gray-600">{l.temp || '-'}°</p></div>
+                              </div>
+                              <button onClick={() => handleDelete('سجل', () => setDailyLogs(dailyLogs.filter(d => d.id !== l.id)))} className="text-red-400 mt-2 w-full text-right"><Trash2 size={14}/></button>
+                          </div>
+                      ))}
                   </div>
-              ))}</div>}
+              )}
           </div>
       );
   };
