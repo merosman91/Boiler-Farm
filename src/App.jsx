@@ -44,8 +44,7 @@ export default function App() {
     const a = document.createElement('a'); a.href = dataStr; a.download = `poultry_smart_backup_${new Date().toISOString().split('T')[0]}.json`;
     document.body.appendChild(a); a.click(); a.remove(); showNotify("تم حفظ النسخة الاحتياطية");
   };
-
-  // --- 1. Dashboard ---
+    // --- 1. Dashboard (محدثة: FCR & EPEF) ---
   const Dashboard = () => {
     if (!activeBatch) return (
         <div className="flex flex-col items-center justify-center h-[60vh] text-center p-6 animate-fade-in">
@@ -58,63 +57,68 @@ export default function App() {
     const batchLogs = dailyLogs.filter(l => l.batchId === activeBatch.id);
     const totalDead = batchLogs.reduce((sum, l) => sum + Number(l.dead || 0), 0);
     const currentCount = activeBatch.initialCount - totalDead;
-    const mortalityRate = ((totalDead / activeBatch.initialCount) * 100).toFixed(1);
+    const mortalityRate = ((totalDead / activeBatch.initialCount) * 100);
+    const livability = 100 - mortalityRate; // نسبة المعيشة
     const totalFeed = batchLogs.reduce((sum, l) => sum + Number(l.feed || 0), 0);
     const age = getDaysDifference(activeBatch.startDate);
     
+    // آخر وزن مسجل
     const lastWeightLog = [...batchLogs].sort((a,b) => new Date(b.date) - new Date(a.date)).find(l => l.avgWeight);
-    const currentWeight = lastWeightLog ? lastWeightLog.avgWeight : 0;
-    
-    // FCR Calculation (معامل التحويل)
-    // FCR = العلف المستهلك / (الوزن الحالي × العدد الحالي / 1000)
-    const totalBiomassKg = (currentCount * currentWeight) / 1000;
-    const fcr = totalBiomassKg > 0 ? (totalFeed / totalBiomassKg).toFixed(2) : "0.00";
+    const currentWeightGM = lastWeightLog ? Number(lastWeightLog.avgWeight) : 0;
+    const currentWeightKG = currentWeightGM / 1000;
+
+    // معامل التحويل (FCR) التراكمي
+    // FCR = العلف المستهلك الكلي / (الوزن الحالي للكيلو * العدد الحي)
+    // ملاحظة: هذه معادلة تقريبية للحقل، الأدق تحتاج حساب وزن النافق
+    const totalBiomass = currentCount * currentWeightKG;
+    const fcr = totalBiomass > 0 ? (totalFeed / totalBiomass).toFixed(2) : "0.00";
+
+    // مؤشر الكفاءة الأوروبي (EPEF)
+    // المعادلة: (متوسط الوزن (جم) * نسبة المعيشة) / (التحويل * العمر * 10)
+    let epef = 0;
+    if (age > 0 && Number(fcr) > 0) {
+        epef = ((currentWeightGM * livability) / (Number(fcr) * age * 10)).toFixed(0);
+    }
 
     const batchSales = sales.filter(s => s.batchId === activeBatch.id).reduce((sum, s) => sum + Number(s.total), 0);
     const batchExpenses = expenses.filter(e => e.batchId === activeBatch.id).reduce((sum, e) => sum + Number(e.cost), 0);
 
-    // تنبيهات التحصين
-    const todayStr = new Date().toISOString().split('T')[0];
-    const dueVaccines = vaccinations.filter(v => v.batchId === activeBatch.id && v.status === 'pending' && v.date <= todayStr);
-
-    const chartData = batchLogs.filter(l => l.avgWeight).map(l => ({ 
-        day: getDaysDifference(activeBatch.startDate) - (getDaysDifference(activeBatch.startDate) - getDaysDifference(l.date)), 
-        val: l.avgWeight 
-    })).sort((a,b)=>a.day-b.day);
+    const dueVaccines = vaccinations.filter(v => v.batchId === activeBatch.id && v.status === 'pending' && v.date <= new Date().toISOString().split('T')[0]);
 
     return (
       <div className="space-y-4 pb-20 animate-fade-in">
-        {/* تنبيه التحصين */}
+        {/* التنبيهات */}
         {dueVaccines.length > 0 && (
-            <div className="bg-purple-100 border-l-4 border-purple-600 p-4 rounded-r-xl shadow-sm animate-pulse">
-                <div className="flex items-center gap-3">
-                    <Syringe className="text-purple-600" size={24} />
-                    <div>
-                        <h3 className="font-bold text-purple-800">تحصينة مستحقة اليوم!</h3>
-                        <p className="text-xs text-purple-700">{dueVaccines[0].name} ({dueVaccines[0].type})</p>
-                    </div>
-                    <Button onClick={() => setActiveTab('health')} variant="ghost" className="mr-auto text-xs bg-white">عرض</Button>
+            <div className="bg-purple-100 border-l-4 border-purple-600 p-3 rounded-r-xl shadow-sm flex items-center justify-between">
+                <div>
+                    <h3 className="font-bold text-purple-800 text-sm">💉 تحصينة مستحقة اليوم</h3>
+                    <p className="text-xs text-purple-700">{dueVaccines[0].name}</p>
                 </div>
+                <Button onClick={() => setActiveTab('health')} variant="ghost" className="text-xs bg-white h-8">عرض</Button>
             </div>
         )}
 
-        <div className="bg-gradient-to-br from-orange-600 to-red-600 rounded-2xl p-5 text-white shadow-xl">
+        {/* الكارت الرئيسي (EPEF & FCR) */}
+        <div className="bg-gradient-to-br from-orange-600 to-red-700 rounded-2xl p-5 text-white shadow-xl">
            <div className="flex justify-between items-start mb-4">
               <div><h2 className="text-lg font-bold">{activeBatch.name}</h2><p className="text-xs opacity-80">عمر {age} يوم</p></div>
-              <div className="bg-white/20 px-3 py-1 rounded-lg text-center backdrop-blur-sm">
-                  <p className="text-xs">FCR</p><p className="font-bold text-xl">{fcr}</p>
+              <div className="text-center">
+                  <p className="text-[10px] opacity-80">مؤشر الكفاءة (EPEF)</p>
+                  <p className={`font-bold text-2xl ${epef > 300 ? 'text-green-300' : 'text-white'}`}>{epef}</p>
               </div>
            </div>
-           <div className="grid grid-cols-3 gap-2 text-center border-t border-white/20 pt-3">
-               <div><p className="text-xs opacity-70">العدد</p><p className="font-bold text-lg">{currentCount}</p></div>
-               <div><p className="text-xs opacity-70">النافق</p><p className="font-bold text-lg">{totalDead} <span className="text-[10px] bg-black/20 px-1 rounded">{mortalityRate}%</span></p></div>
-               <div><p className="text-xs opacity-70">العلف</p><p className="font-bold text-lg">{totalFeed}</p></div>
+           
+           <div className="grid grid-cols-4 gap-2 text-center border-t border-white/20 pt-3">
+               <div><p className="text-[10px] opacity-70">التحويل FCR</p><p className="font-bold">{fcr}</p></div>
+               <div><p className="text-[10px] opacity-70">الوزن (جم)</p><p className="font-bold">{currentWeightGM}</p></div>
+               <div><p className="text-[10px] opacity-70">النافق %</p><p className="font-bold">{mortalityRate.toFixed(1)}%</p></div>
+               <div><p className="text-[10px] opacity-70">العلف</p><p className="font-bold">{totalFeed}</p></div>
            </div>
         </div>
 
         <Card>
-            <div className="flex justify-between items-center mb-2"><h3 className="font-bold text-gray-700 text-sm flex items-center gap-2"><Scale size={18} className="text-blue-500"/> الأوزان</h3><span className="text-sm font-bold text-blue-600">{currentWeight} جم</span></div>
-            <WeightChart data={chartData} />
+            <div className="flex justify-between items-center mb-2"><h3 className="font-bold text-gray-700 text-sm flex items-center gap-2"><Scale size={18} className="text-blue-500"/> منحنى الوزن</h3></div>
+            <WeightChart data={batchLogs.filter(l => l.avgWeight).map(l => ({ day: getDaysDifference(activeBatch.startDate) - (getDaysDifference(activeBatch.startDate) - getDaysDifference(l.date)), val: l.avgWeight })).sort((a,b)=>a.day-b.day)} />
         </Card>
 
         <div className="grid grid-cols-2 gap-3">
@@ -124,6 +128,7 @@ export default function App() {
       </div>
     );
   };
+
 
   // --- 2. Health Manager (الجديد كلياً) ---
   const HealthManager = () => {
