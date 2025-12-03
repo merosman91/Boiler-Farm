@@ -432,7 +432,8 @@ export default function App() {
         {activeTab === 'finance' && <Financials />}
         {activeTab === 'health' && <HealthManager />}
       </div>
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t pb-safe shadow-lg z-30"> <div className="flex justify-around p-2 max-w-md mx-auto"> {[{id:'dashboard',icon:Activity,l:'الرئيسية'},{id:'daily',icon:Calendar,l:'اليوميات'},{id:'health',icon:Syringe,l:'الصحة'},{id:'finance',icon:DollarSign,l:'المالية'},{id:'batches',icon:PackageOpen,l:'الدورات'}].map(t=><button key={t.id} onClick={()=>setActiveTab(t.id)} className={`flex flex-col items-center w-12 ${activeTab===t.id?'text-orange-600':'text-gray-400'}`}><t.icon size={20} strokeWidth={activeTab===t.id?2.5:2}/><span className="text-[9px] font-bold mt-1">{t.l}</span></button>)} </div> </div>
+    <div className="fixed bottom-0 left-0 right-0 bg-white border-t pb-safe shadow-lg z-30"> <div className="flex justify-around p-2 max-w-md mx-auto"> {[{id:'dashboard',icon:Activity,l:'الرئيسية'},{id:'daily',icon:Calendar,l:'اليوميات'},{id:'health',icon:Syringe,l:'الصحة'},{id:'finance',icon:DollarSign,l:'المالية'},{id:'batches',icon:PackageOpen,l:'الدورات'}].map(t=><button key={t.id} onClick={()=>setActiveTab(t.id)} className={`flex flex-col items-center w-12 ${activeTab===t.id?'text-orange-600':'text-gray-400'}`}><t.icon size={20} strokeWidth={activeTab===t.id?2.5:2}/><span className="text-[9px] font-bold mt-1">{t.l}</span></button>)} </div> </div>
+    <p>'تصميم :ميرغني أبوالقاسم عثمان' </p>
     </div>
   );
 }
