@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Bird, DollarSign, Activity, Trash2, Plus, Edit2, Share2, Wheat, TrendingUp, TrendingDown, Scale, AlertTriangle, Download, Thermometer, Calendar, Skull, PackageOpen, Syringe, CheckCircle, Clock, FileText } from 'lucide-react';
+import { Bird, DollarSign, Activity, Trash2, Plus, Edit2, Share2, Wheat, TrendingUp, TrendingDown, Scale, AlertTriangle, Download, Thermometer, Calendar, Skull, PackageOpen, Syringe, CheckCircle, Clock, FileText, Info} from 'lucide-react';
 // تأكد من وجود ملف UI.jsx بنفس المسار
 import { Button, Card, Input, Modal, WeightChart, formatDate, getDaysDifference } from './UI';
 
@@ -44,8 +44,12 @@ export default function App() {
     const a = document.createElement('a'); a.href = dataStr; a.download = `poultry_smart_backup_${new Date().toISOString().split('T')[0]}.json`;
     document.body.appendChild(a); a.click(); a.remove(); showNotify("تم حفظ النسخة الاحتياطية");
   };
-    // --- 1. Dashboard (محدثة: FCR & EPEF) ---
+    
+      // --- 1. Dashboard (محدثة: شرح FCR & EPEF) ---
   const Dashboard = () => {
+    // حالة لإظهار نافذة المعلومات
+    const [showInfo, setShowInfo] = useState(false);
+
     if (!activeBatch) return (
         <div className="flex flex-col items-center justify-center h-[60vh] text-center p-6 animate-fade-in">
             <Bird size={64} className="text-gray-300 mb-4"/>
@@ -58,23 +62,17 @@ export default function App() {
     const totalDead = batchLogs.reduce((sum, l) => sum + Number(l.dead || 0), 0);
     const currentCount = activeBatch.initialCount - totalDead;
     const mortalityRate = ((totalDead / activeBatch.initialCount) * 100);
-    const livability = 100 - mortalityRate; // نسبة المعيشة
+    const livability = 100 - mortalityRate;
     const totalFeed = batchLogs.reduce((sum, l) => sum + Number(l.feed || 0), 0);
     const age = getDaysDifference(activeBatch.startDate);
     
-    // آخر وزن مسجل
     const lastWeightLog = [...batchLogs].sort((a,b) => new Date(b.date) - new Date(a.date)).find(l => l.avgWeight);
     const currentWeightGM = lastWeightLog ? Number(lastWeightLog.avgWeight) : 0;
     const currentWeightKG = currentWeightGM / 1000;
 
-    // معامل التحويل (FCR) التراكمي
-    // FCR = العلف المستهلك الكلي / (الوزن الحالي للكيلو * العدد الحي)
-    // ملاحظة: هذه معادلة تقريبية للحقل، الأدق تحتاج حساب وزن النافق
     const totalBiomass = currentCount * currentWeightKG;
     const fcr = totalBiomass > 0 ? (totalFeed / totalBiomass).toFixed(2) : "0.00";
 
-    // مؤشر الكفاءة الأوروبي (EPEF)
-    // المعادلة: (متوسط الوزن (جم) * نسبة المعيشة) / (التحويل * العمر * 10)
     let epef = 0;
     if (age > 0 && Number(fcr) > 0) {
         epef = ((currentWeightGM * livability) / (Number(fcr) * age * 10)).toFixed(0);
@@ -82,24 +80,29 @@ export default function App() {
 
     const batchSales = sales.filter(s => s.batchId === activeBatch.id).reduce((sum, s) => sum + Number(s.total), 0);
     const batchExpenses = expenses.filter(e => e.batchId === activeBatch.id).reduce((sum, e) => sum + Number(e.cost), 0);
-
     const dueVaccines = vaccinations.filter(v => v.batchId === activeBatch.id && v.status === 'pending' && v.date <= new Date().toISOString().split('T')[0]);
+
+    const chartData = batchLogs.filter(l => l.avgWeight).map(l => ({ 
+        day: getDaysDifference(activeBatch.startDate) - (getDaysDifference(activeBatch.startDate) - getDaysDifference(l.date)), 
+        val: l.avgWeight 
+    })).sort((a,b)=>a.day-b.day);
 
     return (
       <div className="space-y-4 pb-20 animate-fade-in">
-        {/* التنبيهات */}
         {dueVaccines.length > 0 && (
             <div className="bg-purple-100 border-l-4 border-purple-600 p-3 rounded-r-xl shadow-sm flex items-center justify-between">
-                <div>
-                    <h3 className="font-bold text-purple-800 text-sm">💉 تحصينة مستحقة اليوم</h3>
-                    <p className="text-xs text-purple-700">{dueVaccines[0].name}</p>
-                </div>
+                <div><h3 className="font-bold text-purple-800 text-sm">💉 تحصينة مستحقة اليوم</h3><p className="text-xs text-purple-700">{dueVaccines[0].name}</p></div>
                 <Button onClick={() => setActiveTab('health')} variant="ghost" className="text-xs bg-white h-8">عرض</Button>
             </div>
         )}
 
-        {/* الكارت الرئيسي (EPEF & FCR) */}
-        <div className="bg-gradient-to-br from-orange-600 to-red-700 rounded-2xl p-5 text-white shadow-xl">
+        {/* الكارت الرئيسي المطور */}
+        <div className="bg-gradient-to-br from-orange-600 to-red-700 rounded-2xl p-5 text-white shadow-xl relative">
+           {/* زر المعلومات */}
+           <button onClick={() => setShowInfo(true)} className="absolute top-4 left-4 text-white/70 hover:text-white transition-colors">
+               <Info size={20} />
+           </button>
+
            <div className="flex justify-between items-start mb-4">
               <div><h2 className="text-lg font-bold">{activeBatch.name}</h2><p className="text-xs opacity-80">عمر {age} يوم</p></div>
               <div className="text-center">
@@ -118,17 +121,45 @@ export default function App() {
 
         <Card>
             <div className="flex justify-between items-center mb-2"><h3 className="font-bold text-gray-700 text-sm flex items-center gap-2"><Scale size={18} className="text-blue-500"/> منحنى الوزن</h3></div>
-            <WeightChart data={batchLogs.filter(l => l.avgWeight).map(l => ({ day: getDaysDifference(activeBatch.startDate) - (getDaysDifference(activeBatch.startDate) - getDaysDifference(l.date)), val: l.avgWeight })).sort((a,b)=>a.day-b.day)} />
+            <WeightChart data={chartData} />
         </Card>
 
         <div className="grid grid-cols-2 gap-3">
             <Card className="bg-emerald-50 border-emerald-100 p-3"><p className="text-xs text-emerald-800 font-bold mb-1">المبيعات</p><p className="text-lg font-bold text-emerald-700">{batchSales.toLocaleString()}</p></Card>
             <Card className="bg-rose-50 border-rose-100 p-3"><p className="text-xs text-rose-800 font-bold mb-1">المصروفات</p><p className="text-lg font-bold text-rose-700">{batchExpenses.toLocaleString()}</p></Card>
         </div>
+
+        {/* نافذة المعلومات المنبثقة */}
+        <Modal isOpen={showInfo} onClose={() => setShowInfo(false)} title="دليل المؤشرات الفنية">
+            <div className="space-y-4 text-sm text-gray-700">
+                <div className="bg-orange-50 p-3 rounded-lg border border-orange-100">
+                    <h4 className="font-bold text-orange-800 mb-1">1. معامل التحويل (FCR)</h4>
+                    <p className="text-xs mb-2">كمية العلف المطلوبة لإنتاج 1 كجم لحم.</p>
+                    <ul className="list-disc mr-4 text-[11px] text-gray-600">
+                        <li><b>المعادلة:</b> إجمالي العلف / إجمالي الوزن القائم.</li>
+                        <li><b>التقييم:</b> كلما قل الرقم كان أفضل.</li>
+                        <li>⭐ 1.5 (ممتاز) | 😐 1.7 (متوسط) | ⚠️ 1.9+ (سيء).</li>
+                    </ul>
+                </div>
+
+                <div className="bg-blue-50 p-3 rounded-lg border border-blue-100">
+                    <h4 className="font-bold text-blue-800 mb-1">2. مؤشر الكفاءة الأوروبي (EPEF)</h4>
+                    <p className="text-xs mb-2">المقياس العالمي لنجاح الدورة (يجمع السرعة والمناعة والتوفير).</p>
+                    <ul className="list-disc mr-4 text-[11px] text-gray-600">
+                        <li><b>المعادلة:</b> (الوزن × المعيشة) / (التحويل × العمر × 10).</li>
+                        <li><b>التقييم:</b> كلما زاد الرقم كان أفضل.</li>
+                        <li>⭐ 360+ (عالمي) | ✅ 300+ (جيد) | ⚠️ أقل من 250 (ضعيف).</li>
+                    </ul>
+                </div>
+                
+                <div className="text-center text-xs text-gray-400 pt-2 border-t">
+                    يتم حساب هذه الأرقام تلقائياً بناءً على "اليوميات" المسجلة.
+                </div>
+            </div>
+        </Modal>
       </div>
     );
   };
-
 
   // --- 2. Health Manager (الجديد كلياً) ---
   const HealthManager = () => {
