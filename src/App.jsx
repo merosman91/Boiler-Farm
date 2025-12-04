@@ -26,7 +26,7 @@ const SplashScreen = ({ onFinish }) => {
         const timer = setTimeout(() => {
             setShow(false);
             setTimeout(() => onFinish(), 500);
-        }, 3000);
+        }, 6000);
 
         return () => {
             clearInterval(progressInterval);
@@ -182,15 +182,15 @@ export default function App() {
                     </div>
                     <div className="bg-gray-50 p-3 rounded-xl text-sm space-y-2 text-right">
                         <p className="text-xs text-gray-400 text-center mb-2">لطلب نسخ خاصة أو دعم فني:</p>
-                        <a href="tel:+249000000000" className="flex items-center gap-3 p-2 bg-white border rounded-lg hover:border-orange-300 transition-colors">
+                        <a href="tel:+249921027104" className="flex items-center gap-3 p-2 bg-white border rounded-lg hover:border-orange-300 transition-colors">
                             <div className="bg-green-100 p-1.5 rounded text-green-600"><Phone size={16}/></div>
                             <span className="font-bold text-gray-700">اتصال هاتفي</span>
                         </a>
-                        <a href="https://wa.me/249000000000" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-2 bg-white border rounded-lg hover:border-orange-300 transition-colors">
+                        <a href="https://wa.me/249921027104" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-2 bg-white border rounded-lg hover:border-orange-300 transition-colors">
                             <div className="bg-emerald-100 p-1.5 rounded text-emerald-600"><Share2 size={16}/></div>
                             <span className="font-bold text-gray-700">واتساب</span>
                         </a>
-                        <a href="mailto:dev@example.com" className="flex items-center gap-3 p-2 bg-white border rounded-lg hover:border-orange-300 transition-colors">
+                        <a href="mailto:merghanigasimosman@gmail.com" className="flex items-center gap-3 p-2 bg-white border rounded-lg hover:border-orange-300 transition-colors">
                             <div className="bg-blue-100 p-1.5 rounded text-blue-600"><Mail size={16}/></div>
                             <span className="font-bold text-gray-700">بريد إلكتروني</span>
                         </a>
@@ -290,12 +290,12 @@ export default function App() {
                 <div className="bg-orange-50 p-3 rounded-lg border border-orange-100">
                     <h4 className="font-bold text-orange-800 mb-1">1. معامل التحويل (FCR)</h4>
                     <p className="text-xs mb-2">كمية العلف لإنتاج 1 كجم لحم.</p>
-                    <ul className="list-disc mr-4 text-[11px] text-gray-600"><li>المعادلة: إجمالي العلف / الوزن القائم.</li><li>⭐ 1.5 (ممتاز) | ⚠️ 1.8+ (سيء).</li></ul>
+                    <ul className="list-disc mr-4 text-[13px] text-gray-600"><li>المعادلة: إجمالي العلف / الوزن القائم.</li><li>⭐ 1.5 (ممتاز) | ⚠️ 1.8+ (سيء).</li></ul>
                 </div>
                 <div className="bg-blue-50 p-3 rounded-lg border border-blue-100">
                     <h4 className="font-bold text-blue-800 mb-1">2. مؤشر الكفاءة (EPEF)</h4>
                     <p className="text-xs mb-2">مقياس نجاح الدورة العالمي.</p>
-                    <ul className="list-disc mr-4 text-[11px] text-gray-600"><li>⭐ 300+ (ناجح) | ⚠️ أقل من 250 (ضعيف).</li></ul>
+                    <ul className="list-disc mr-4 text-[13px] text-gray-600"><li>⭐ 300+ (ناجح) | ⚠️ أقل من 250 (ضعيف).</li></ul>
                 </div>
             </div>
         </Modal>
