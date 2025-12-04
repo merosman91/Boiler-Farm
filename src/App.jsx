@@ -151,7 +151,7 @@ export default function App() {
     const [showInfo, setShowInfo] = useState(false);
 
     if (!activeBatch) return (
-        <div className="flex flex-col items-center justify-center h-[60vh] text-center p-6 animate-fade-in">
+        <div className="flex flex-col items-center justify-center h-[75vh] text-center p-6 animate-fade-in">
             <Bird size={64} className="text-gray-300 mb-4"/>
             <h2 className="text-xl font-bold text-gray-700">لا توجد دورة نشطة</h2>
             <Button onClick={() => setActiveTab('batches')} className="mt-4">بدء دورة جديدة</Button>
@@ -235,7 +235,7 @@ export default function App() {
                 <div className="bg-orange-50 p-3 rounded-lg border border-orange-100">
                     <h4 className="font-bold text-orange-800 mb-1">1. معامل التحويل (FCR)</h4>
                     <p className="text-xs mb-2">كمية العلف المطلوبة لإنتاج 1 كجم لحم.</p>
-                    <ul className="list-disc mr-4 text-[11px] text-gray-600">
+                    <ul className="list-disc mr-4 text-[12px] text-gray-600">
                         <li><b>المعادلة:</b> إجمالي العلف / إجمالي الوزن القائم.</li>
                         <li><b>التقييم:</b> كلما قل الرقم كان أفضل.</li>
                         <li>⭐ 1.5 (ممتاز) | 😐 1.7 (متوسط) | ⚠️ 1.9+ (سيء).</li>
@@ -245,7 +245,7 @@ export default function App() {
                 <div className="bg-blue-50 p-3 rounded-lg border border-blue-100">
                     <h4 className="font-bold text-blue-800 mb-1">2. مؤشر الكفاءة الأوروبي (EPEF)</h4>
                     <p className="text-xs mb-2">المقياس العالمي لنجاح الدورة (يجمع السرعة والمناعة والتوفير).</p>
-                    <ul className="list-disc mr-4 text-[11px] text-gray-600">
+                    <ul className="list-disc mr-4 text-[12px] text-gray-600">
                         <li><b>المعادلة:</b> (الوزن × المعيشة) / (التحويل × العمر × 10).</li>
                         <li><b>التقييم:</b> كلما زاد الرقم كان أفضل.</li>
                         <li>⭐ 360+ (عالمي) | ✅ 300+ (جيد) | ⚠️ أقل من 250 (ضعيف).</li>
