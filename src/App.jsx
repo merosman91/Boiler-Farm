@@ -145,13 +145,12 @@ export default function App() {
     document.body.appendChild(a); a.click(); a.remove(); showNotify("تم حفظ النسخة الاحتياطية");
   };
     
-      // --- 1. Dashboard (محدثة: شرح FCR & EPEF) ---
+    // --- 1. Dashboard (محدثة: إصلاح مكان الأيقونة) ---
   const Dashboard = () => {
-    // حالة لإظهار نافذة المعلومات
     const [showInfo, setShowInfo] = useState(false);
 
     if (!activeBatch) return (
-        <div className="flex flex-col items-center justify-center h-[75vh] text-center p-6 animate-fade-in">
+        <div className="flex flex-col items-center justify-center h-[60vh] text-center p-6 animate-fade-in">
             <Bird size={64} className="text-gray-300 mb-4"/>
             <h2 className="text-xl font-bold text-gray-700">لا توجد دورة نشطة</h2>
             <Button onClick={() => setActiveTab('batches')} className="mt-4">بدء دورة جديدة</Button>
@@ -196,14 +195,13 @@ export default function App() {
             </div>
         )}
 
-        {/* الكارت الرئيسي المطور */}
+        {/* تم تعديل مكان الأيقونة هنا: top-2 left-2 */}
         <div className="bg-gradient-to-br from-orange-600 to-red-700 rounded-2xl p-5 text-white shadow-xl relative">
-           {/* زر المعلومات */}
-           <button onClick={() => setShowInfo(true)} className="absolute top-4 left-4 text-white/70 hover:text-white transition-colors">
-               <Info size={20} />
+           <button onClick={() => setShowInfo(true)} className="absolute top-2 left-2 p-1 bg-white/20 hover:bg-white/40 rounded-full transition-colors">
+               <Info size={16} className="text-white" />
            </button>
 
-           <div className="flex justify-between items-start mb-4">
+           <div className="flex justify-between items-start mb-4 mt-2">
               <div><h2 className="text-lg font-bold">{activeBatch.name}</h2><p className="text-xs opacity-80">عمر {age} يوم</p></div>
               <div className="text-center">
                   <p className="text-[10px] opacity-80">مؤشر الكفاءة (EPEF)</p>
@@ -229,37 +227,24 @@ export default function App() {
             <Card className="bg-rose-50 border-rose-100 p-3"><p className="text-xs text-rose-800 font-bold mb-1">المصروفات</p><p className="text-lg font-bold text-rose-700">{batchExpenses.toLocaleString()}</p></Card>
         </div>
 
-        {/* نافذة المعلومات المنبثقة */}
         <Modal isOpen={showInfo} onClose={() => setShowInfo(false)} title="دليل المؤشرات الفنية">
             <div className="space-y-4 text-sm text-gray-700">
                 <div className="bg-orange-50 p-3 rounded-lg border border-orange-100">
                     <h4 className="font-bold text-orange-800 mb-1">1. معامل التحويل (FCR)</h4>
-                    <p className="text-xs mb-2">كمية العلف المطلوبة لإنتاج 1 كجم لحم.</p>
-                    <ul className="list-disc mr-4 text-[12px] text-gray-600">
-                        <li><b>المعادلة:</b> إجمالي العلف / إجمالي الوزن القائم.</li>
-                        <li><b>التقييم:</b> كلما قل الرقم كان أفضل.</li>
-                        <li>⭐ 1.5 (ممتاز) | 😐 1.7 (متوسط) | ⚠️ 1.9+ (سيء).</li>
-                    </ul>
+                    <p className="text-xs mb-2">كمية العلف لإنتاج 1 كجم لحم.</p>
+                    <ul className="list-disc mr-4 text-[11px] text-gray-600"><li>المعادلة: إجمالي العلف / الوزن القائم.</li><li>⭐ 1.5 (ممتاز) | ⚠️ 1.8+ (سيء).</li></ul>
                 </div>
-
                 <div className="bg-blue-50 p-3 rounded-lg border border-blue-100">
-                    <h4 className="font-bold text-blue-800 mb-1">2. مؤشر الكفاءة الأوروبي (EPEF)</h4>
-                    <p className="text-xs mb-2">المقياس العالمي لنجاح الدورة (يجمع السرعة والمناعة والتوفير).</p>
-                    <ul className="list-disc mr-4 text-[12px] text-gray-600">
-                        <li><b>المعادلة:</b> (الوزن × المعيشة) / (التحويل × العمر × 10).</li>
-                        <li><b>التقييم:</b> كلما زاد الرقم كان أفضل.</li>
-                        <li>⭐ 360+ (عالمي) | ✅ 300+ (جيد) | ⚠️ أقل من 250 (ضعيف).</li>
-                    </ul>
-                </div>
-                
-                <div className="text-center text-xs text-gray-400 pt-2 border-t">
-                    يتم حساب هذه الأرقام تلقائياً بناءً على "اليوميات" المسجلة.
+                    <h4 className="font-bold text-blue-800 mb-1">2. مؤشر الكفاءة (EPEF)</h4>
+                    <p className="text-xs mb-2">مقياس نجاح الدورة العالمي.</p>
+                    <ul className="list-disc mr-4 text-[11px] text-gray-600"><li>⭐ 300+ (ناجح) | ⚠️ أقل من 250 (ضعيف).</li></ul>
                 </div>
             </div>
         </Modal>
       </div>
     );
   };
+ 
 
   // --- 2. Health Manager (الجديد كلياً) ---
   const HealthManager = () => {
@@ -333,42 +318,43 @@ export default function App() {
       );
   };
 
-  // --- 3. Batch Manager (تم تحديثه لإنشاء الجدول تلقائياً) ---
+    // --- 3. إدارة الدورات (محدثة: تفعيل وتقارير) ---
   const BatchManager = () => {
       const [view, setView] = useState('list');
       const [newBatch, setNewBatch] = useState({ name: '', startDate: new Date().toISOString().split('T')[0], initialCount: '', breed: '' });
+      const [selectedBatchReport, setSelectedBatchReport] = useState(null); // للدورة المختارة
 
+      // إنشاء جدول التحصينات
       const generateDefaultSchedule = (batchId, startDate) => {
-          const templates = [
-              { day: 7, name: 'هتشنر + نيوكاسل', type: 'تقطير/رش' },
-              { day: 10, name: 'أنفلونزا (H5N1)', type: 'حقن' },
-              { day: 12, name: 'جامبورو (متوسط)', type: 'مياه شرب' },
-              { day: 18, name: 'لاسوتا (كولون)', type: 'مياه شرب' },
-              { day: 24, name: 'جامبورو (إعادة)', type: 'مياه شرب' }
-          ];
-          return templates.map((t, i) => ({
-              id: Date.now() + i,
-              batchId,
-              name: t.name,
-              type: t.type,
-              date: addDays(startDate, t.day),
-              dayAge: t.day,
-              status: 'pending'
-          }));
+          const templates = [{ day: 7, name: 'هتشنر + نيوكاسل', type: 'تقطير' }, { day: 10, name: 'أنفلونزا', type: 'حقن' }, { day: 12, name: 'جامبورو', type: 'شرب' }, { day: 18, name: 'لاسوتا', type: 'شرب' }];
+          return templates.map((t, i) => ({ id: Date.now() + i, batchId, name: t.name, type: t.type, date: addDays(startDate, t.day), dayAge: t.day, status: 'pending' }));
       };
 
       const startBatch = () => {
           if (!newBatch.name || !newBatch.initialCount) return showNotify("البيانات ناقصة");
           const batchId = Date.now();
+          // إغلاق أي دورة نشطة
           const updatedBatches = batches.map(b => b.status === 'active' ? {...b, status: 'closed', endDate: new Date().toISOString()} : b);
           setBatches([...updatedBatches, { ...newBatch, id: batchId, status: 'active' }]);
-          
-          // إنشاء الجدول تلقائياً
-          const newVaccs = generateDefaultSchedule(batchId, newBatch.startDate);
-          setVaccinations([...vaccinations, ...newVaccs]);
+          setVaccinations([...vaccinations, ...generateDefaultSchedule(batchId, newBatch.startDate)]);
+          setNewBatch({ name: '', startDate: '', initialCount: '', breed: '' }); setView('list'); showNotify("تم بدء الدورة");
+      };
 
-          setNewBatch({ name: '', startDate: '', initialCount: '', breed: '' });
-          setView('list'); showNotify("تم بدء الدورة والجدول 💉");
+      const activateBatch = (id) => {
+          const updated = batches.map(b => ({ ...b, status: b.id === id ? 'active' : 'closed', endDate: b.id === id ? null : (b.status === 'active' ? new Date().toISOString() : b.endDate) }));
+          setBatches(updated);
+          showNotify("تم تفعيل الدورة ✅");
+      };
+
+      // حسابات التقرير للدورة المختارة
+      const getReportStats = (batch) => {
+          const bLogs = dailyLogs.filter(l => l.batchId === batch.id);
+          const bSales = sales.filter(s => s.batchId === batch.id).reduce((sum, s) => sum + Number(s.total), 0);
+          const bExp = expenses.filter(e => e.batchId === batch.id).reduce((sum, e) => sum + Number(e.cost), 0);
+          const dead = bLogs.reduce((sum, l) => sum + Number(l.dead || 0), 0);
+          const feed = bLogs.reduce((sum, l) => sum + Number(l.feed || 0), 0);
+          const lastWt = [...bLogs].sort((a,b)=>new Date(b.date)-new Date(a.date)).find(l=>l.avgWeight)?.avgWeight || 0;
+          return { bSales, bExp, profit: bSales - bExp, dead, feed, lastWt };
       };
 
       return (
@@ -378,93 +364,129 @@ export default function App() {
                     <Button onClick={() => setView('new')} className="w-full"><Plus size={18}/> بدء دورة جديدة</Button>
                     <div className="space-y-3 mt-4">
                         {batches.map(b => (
-                            <div key={b.id} className={`p-4 rounded-xl border flex justify-between items-center ${b.status === 'active' ? 'bg-orange-50 border-orange-200' : 'bg-white border-gray-100'}`}>
-                                <div>
-                                    <p className="font-bold text-gray-800">{b.name} <span className="text-xs font-normal text-gray-500">({b.breed})</span></p>
-                                    <p className="text-xs text-gray-500">{formatDate(b.startDate)} • {b.initialCount} طائر</p>
+                            <div key={b.id} onClick={() => setSelectedBatchReport(b)} className={`p-4 rounded-xl border relative cursor-pointer active:scale-95 transition-all ${b.status === 'active' ? 'bg-orange-50 border-orange-200 shadow-md' : 'bg-white border-gray-100'}`}>
+                                <div className="flex justify-between items-start">
+                                    <div>
+                                        <p className="font-bold text-gray-800">{b.name}</p>
+                                        <p className="text-xs text-gray-500">{formatDate(b.startDate)} • {b.initialCount} طائر</p>
+                                        <p className="text-[10px] text-gray-400 mt-1">{b.breed}</p>
+                                    </div>
+                                    <div className="flex flex-col items-end gap-2">
+                                        <span className={`text-[10px] px-2 py-1 rounded font-bold ${b.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
+                                            {b.status === 'active' ? 'نشطة' : 'مغلقة'}
+                                        </span>
+                                        {b.status !== 'active' && (
+                                            <button onClick={(e) => { e.stopPropagation(); activateBatch(b.id); }} className="text-[10px] bg-blue-100 text-blue-600 px-2 py-1 rounded font-bold hover:bg-blue-200">
+                                                تفعيل
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
-                                <span className={`text-xs px-2 py-1 rounded font-bold ${b.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>{b.status === 'active' ? 'نشطة' : 'مغلقة'}</span>
                             </div>
                         ))}
                     </div>
                   </>
               )}
+
               {view === 'new' && (
                   <Card>
                       <h3 className="font-bold mb-4 text-center">دورة جديدة</h3>
                       <Input label="الاسم" value={newBatch.name} onChange={e => setNewBatch({...newBatch, name: e.target.value})} />
-                      <Input label="تاريخ التسكين" type="date" value={newBatch.startDate} onChange={e => setNewBatch({...newBatch, startDate: e.target.value})} />
-                      <div className="flex gap-2">
-                          <Input label="العدد" type="number" value={newBatch.initialCount} onChange={e => setNewBatch({...newBatch, initialCount: e.target.value})} />
-                          <Input label="السلالة" value={newBatch.breed} onChange={e => setNewBatch({...newBatch, breed: e.target.value})} />
-                      </div>
-                      <Button onClick={startBatch} className="w-full">حفظ وإنشاء الجدول</Button>
+                      <Input label="التاريخ" type="date" value={newBatch.startDate} onChange={e => setNewBatch({...newBatch, startDate: e.target.value})} />
+                      <div className="flex gap-2"><Input label="العدد" type="number" value={newBatch.initialCount} onChange={e => setNewBatch({...newBatch, initialCount: e.target.value})} /><Input label="السلالة" value={newBatch.breed} onChange={e => setNewBatch({...newBatch, breed: e.target.value})} /></div>
+                      <Button onClick={startBatch} className="w-full">حفظ وبدء</Button>
                   </Card>
+              )}
+
+              {/* نافذة التقرير الأنيقة */}
+              {selectedBatchReport && (
+                  <Modal isOpen={!!selectedBatchReport} onClose={() => setSelectedBatchReport(null)} title={`تقرير: ${selectedBatchReport.name}`}>
+                      {(() => {
+                          const stats = getReportStats(selectedBatchReport);
+                          return (
+                              <div className="space-y-4">
+                                  <div className="grid grid-cols-2 gap-3 text-center">
+                                      <div className="bg-emerald-50 p-2 rounded-lg"><p className="text-xs text-gray-500">الربح</p><p className={`font-bold ${stats.profit>=0?'text-emerald-600':'text-red-600'}`}>{stats.profit.toLocaleString()}</p></div>
+                                      <div className="bg-blue-50 p-2 rounded-lg"><p className="text-xs text-gray-500">الوزن النهائي</p><p className="font-bold text-blue-600">{stats.lastWt} جم</p></div>
+                                      <div className="bg-red-50 p-2 rounded-lg"><p className="text-xs text-gray-500">النافق</p><p className="font-bold text-red-600">{stats.dead}</p></div>
+                                      <div className="bg-amber-50 p-2 rounded-lg"><p className="text-xs text-gray-500">العلف</p><p className="font-bold text-amber-600">{stats.feed} كجم</p></div>
+                                  </div>
+                                  <div className="text-xs space-y-1 bg-gray-50 p-3 rounded text-gray-600">
+                                      <p>• إجمالي المبيعات: {stats.bSales.toLocaleString()}</p>
+                                      <p>• إجمالي المصاريف: {stats.bExp.toLocaleString()}</p>
+                                      <p>• تاريخ البدء: {formatDate(selectedBatchReport.startDate)}</p>
+                                  </div>
+                                  <Button onClick={() => shareViaWhatsapp(`تقرير دورة ${selectedBatchReport.name}\nالربح: ${stats.profit}\nالنافق: ${stats.dead}\nالوزن: ${stats.lastWt}`)} variant="success" className="w-full">مشاركة واتساب</Button>
+                              </div>
+                          );
+                      })()}
+                  </Modal>
               )}
           </div>
       );
   };
 
-    // --- 3. اليوميات (محدثة: أنواع العلف وأسباب النافق) ---
+    // --- 4. اليوميات (محدثة: تعديل السجلات) ---
   const DailyOperations = () => {
-      if (!activeBatch) return null;
+      if (!activeBatch) return <p className="text-center text-gray-500 py-10">ابدأ دورة أولاً</p>;
       
       const [view, setView] = useState('list');
-      // تمت إضافة deadCause و feedType للحالة
-      const [log, setLog] = useState({ date: new Date().toISOString().split('T')[0], dead: '', deadCause: 'طبيعي', feed: '', feedType: 'بادي 23%', avgWeight: '', temp: '', notes: '' });
+      const [log, setLog] = useState({ id: null, date: new Date().toISOString().split('T')[0], dead: '', deadCause: 'طبيعي', feed: '', feedType: 'بادي 23%', avgWeight: '', temp: '', notes: '' });
 
       const saveLog = () => {
-          setDailyLogs([...dailyLogs, { ...log, id: Date.now(), batchId: activeBatch.id }]);
-          // إعادة تعيين الحقول
-          setLog({ date: new Date().toISOString().split('T')[0], dead: '', deadCause: 'طبيعي', feed: '', feedType: 'بادي 23%', avgWeight: '', temp: '', notes: '' });
+          if (log.id) {
+              // تعديل سجل موجود
+              setDailyLogs(dailyLogs.map(l => l.id === log.id ? { ...log, batchId: activeBatch.id } : l));
+              showNotify("تم تعديل السجل ✏️");
+          } else {
+              // سجل جديد
+              setDailyLogs([...dailyLogs, { ...log, id: Date.now(), batchId: activeBatch.id }]);
+              showNotify("تم الحفظ ✅");
+          }
+          setLog({ id: null, date: new Date().toISOString().split('T')[0], dead: '', deadCause: 'طبيعي', feed: '', feedType: 'بادي 23%', avgWeight: '', temp: '', notes: '' });
           setView('list'); 
-          showNotify("تم حفظ السجل اليومي ✅");
       };
 
-      // قوائم الاختيار
+      const handleEditLog = (item) => {
+          setLog(item);
+          setView('new');
+      };
+
       const FEED_TYPES = ['بادي 23%', 'نامي 21%', 'ناهي 19%'];
       const DEATH_CAUSES = ['طبيعي', 'سموم فطرية', 'إجهاد حراري', 'أمراض تنفسية', 'كوكسيديا', 'سردة/فرزة', 'أخرى'];
 
       return (
           <div className="space-y-4 pb-20">
               <div className="flex p-1 bg-gray-200 rounded-xl">
-                  <button onClick={() => setView('list')} className={`flex-1 py-2 text-xs font-bold rounded-lg ${view === 'list' ? 'bg-white shadow text-orange-600' : 'text-gray-500'}`}>السجل</button>
-                  <button onClick={() => setView('new')} className={`flex-1 py-2 text-xs font-bold rounded-lg ${view === 'new' ? 'bg-white shadow text-orange-600' : 'text-gray-500'}`}>تسجيل جديد</button>
+                  <button onClick={() => { setView('list'); setLog({ id: null, date: new Date().toISOString().split('T')[0], dead: '', deadCause: 'طبيعي', feed: '', feedType: 'بادي 23%', avgWeight: '', temp: '', notes: '' }); }} className={`flex-1 py-2 text-xs font-bold rounded-lg ${view === 'list' ? 'bg-white shadow text-orange-600' : 'text-gray-500'}`}>السجل</button>
+                  <button onClick={() => setView('new')} className={`flex-1 py-2 text-xs font-bold rounded-lg ${view === 'new' ? 'bg-white shadow text-orange-600' : 'text-gray-500'}`}>
+                      {log.id ? 'تعديل' : 'جديد'}
+                  </button>
               </div>
 
               {view === 'new' && (
                   <Card className="animate-slide-up">
                       <Input label="التاريخ" type="date" value={log.date} onChange={e => setLog({...log, date: e.target.value})} />
-                      
-                      {/* قسم النافق المطور */}
                       <div className="bg-red-50 p-3 rounded-xl mb-3 border border-red-100">
                           <label className="text-xs font-bold text-red-800 block mb-2 flex items-center gap-1"><Skull size={14}/> النافق</label>
                           <div className="flex gap-2">
                               <input type="number" className="flex-1 p-2 rounded border border-red-200" value={log.dead} onChange={e => setLog({...log, dead: e.target.value})} placeholder="العدد" />
-                              <select className="flex-1 p-2 rounded border border-red-200 text-xs bg-white" value={log.deadCause} onChange={e => setLog({...log, deadCause: e.target.value})}>
-                                  {DEATH_CAUSES.map(c => <option key={c} value={c}>{c}</option>)}
-                              </select>
+                              <select className="flex-1 p-2 rounded border border-red-200 text-xs bg-white" value={log.deadCause} onChange={e => setLog({...log, deadCause: e.target.value})}>{DEATH_CAUSES.map(c => <option key={c} value={c}>{c}</option>)}</select>
                           </div>
                       </div>
-
-                      {/* قسم العلف المطور */}
                       <div className="bg-amber-50 p-3 rounded-xl mb-3 border border-amber-100">
-                          <label className="text-xs font-bold text-amber-800 block mb-2 flex items-center gap-1"><Wheat size={14}/> استهلاك العلف</label>
+                          <label className="text-xs font-bold text-amber-800 block mb-2 flex items-center gap-1"><Wheat size={14}/> العلف</label>
                           <div className="flex gap-2">
-                              <input type="number" className="flex-1 p-2 rounded border border-amber-200" value={log.feed} onChange={e => setLog({...log, feed: e.target.value})} placeholder="الكمية (كجم)" />
-                              <select className="flex-1 p-2 rounded border border-amber-200 text-xs bg-white" value={log.feedType} onChange={e => setLog({...log, feedType: e.target.value})}>
-                                  {FEED_TYPES.map(f => <option key={f} value={f}>{f}</option>)}
-                              </select>
+                              <input type="number" className="flex-1 p-2 rounded border border-amber-200" value={log.feed} onChange={e => setLog({...log, feed: e.target.value})} placeholder="كجم" />
+                              <select className="flex-1 p-2 rounded border border-amber-200 text-xs bg-white" value={log.feedType} onChange={e => setLog({...log, feedType: e.target.value})}>{FEED_TYPES.map(f => <option key={f} value={f}>{f}</option>)}</select>
                           </div>
                       </div>
-
                       <div className="grid grid-cols-2 gap-2">
-                          <Input label="متوسط الوزن (جم)" type="number" value={log.avgWeight} onChange={e => setLog({...log, avgWeight: e.target.value})} />
-                          <Input label="الحرارة °C" type="number" value={log.temp} onChange={e => setLog({...log, temp: e.target.value})} />
+                          <Input label="الوزن (جم)" type="number" value={log.avgWeight} onChange={e => setLog({...log, avgWeight: e.target.value})} />
+                          <Input label="الحرارة" type="number" value={log.temp} onChange={e => setLog({...log, temp: e.target.value})} />
                       </div>
-                      
                       <Input label="ملاحظات" value={log.notes} onChange={e => setLog({...log, notes: e.target.value})} />
-                      <Button onClick={saveLog} className="w-full mt-2">حفظ البيانات</Button>
+                      <Button onClick={saveLog} className="w-full mt-2">{log.id ? 'حفظ التعديلات' : 'حفظ البيانات'}</Button>
                   </Card>
               )}
 
@@ -474,14 +496,17 @@ export default function App() {
                           <div key={l.id} className="bg-white p-3 rounded-xl shadow-sm border border-gray-100 text-xs">
                               <div className="flex justify-between font-bold text-gray-800 mb-2 border-b pb-1">
                                   <span>{formatDate(l.date)}</span>
-                                  {l.dead > 0 && <span className="text-red-600">نافق: {l.dead} ({l.deadCause})</span>}
+                                  <div className="flex gap-2">
+                                      <button onClick={() => handleEditLog(l)} className="text-blue-500 flex items-center gap-1 bg-blue-50 px-2 py-0.5 rounded"><Edit2 size={12}/> تعديل</button>
+                                      <button onClick={() => handleDelete('سجل', () => setDailyLogs(dailyLogs.filter(d => d.id !== l.id)))} className="text-red-500 bg-red-50 px-2 py-0.5 rounded"><Trash2 size={12}/></button>
+                                  </div>
                               </div>
                               <div className="grid grid-cols-3 gap-2 text-center text-gray-500">
-                                  <div><p>علف ({l.feedType})</p><p className="font-bold text-amber-600">{l.feed} كجم</p></div>
+                                  <div><p>علف</p><p className="font-bold text-amber-600">{l.feed} كجم</p></div>
                                   <div><p>وزن</p><p className="font-bold text-blue-600">{l.avgWeight || '-'} جم</p></div>
-                                  <div><p>حرارة</p><p className="font-bold text-gray-600">{l.temp || '-'}°</p></div>
+                                  <div><p>نافق</p><p className="font-bold text-red-600">{l.dead || '-'}</p></div>
                               </div>
-                              <button onClick={() => handleDelete('سجل', () => setDailyLogs(dailyLogs.filter(d => d.id !== l.id)))} className="text-red-400 mt-2 w-full text-right"><Trash2 size={14}/></button>
+                              {l.notes && <p className="mt-1 text-gray-400 italic">"{l.notes}"</p>}
                           </div>
                       ))}
                   </div>
@@ -489,7 +514,7 @@ export default function App() {
           </div>
       );
   };
-
+  
   const Financials = () => {
     if (!activeBatch) return null;
     const [view, setView] = useState('sales');
