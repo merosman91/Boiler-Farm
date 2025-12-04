@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Bird, DollarSign, Activity, Trash2, Plus, Edit2, Share2, Wheat, TrendingUp, TrendingDown, Scale, AlertTriangle, Download, Thermometer, Calendar, Skull, PackageOpen, Syringe, CheckCircle, Clock, FileText, Info} from 'lucide-react';
+import { Bird, DollarSign, Activity, Trash2, Plus, Edit2, Share2, Wheat, TrendingUp, TrendingDown, Scale, AlertTriangle, Download, Thermometer, Calendar, Skull, PackageOpen, Syringe, CheckCircle, Clock, FileText, Info, code, mail, phone} from 'lucide-react';
 // تأكد من وجود ملف UI.jsx بنفس المسار
 import { Button, Card, Input, Modal, WeightChart, formatDate, getDaysDifference } from './UI';
 
