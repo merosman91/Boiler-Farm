@@ -79,7 +79,7 @@ const SplashScreen = ({ onFinish, duration = 5000 }) => {
                 </div>
                 
                 <div className="mt-6 text-white/60 text-xs">
-                    <p>الإصدار 1.0.0 • © {new Date().getFullYear()}</p>
+                    <p>الإصدار 2.0.0 • © {new Date().getFullYear()}</p>
                     <p className="mt-1">جميع الحقوق محفوظة</p>
                 </div>
             </div>
